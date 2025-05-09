@@ -55,6 +55,4 @@ npm start
 - GET /api/courses - 사용자의 여행 코스 목록 조회
 - GET /api/courses/:id - 여행 코스 상세 정보 조회
 
-## 라이선스
-
-MIT 
+ 
