@@ -1,29 +1,45 @@
-const pool = require('../config/database');
+const db = require('../config/database');
+const bcrypt = require('bcrypt');
 
 class User {
+  static async findById(id) {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM users WHERE id = ?', [id], (err, results) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(results[0]);
+      });
+    });
+  }
+
   static async findByEmail(email) {
-    const [rows] = await pool.execute(
-      'SELECT * FROM users WHERE email = ?',
-      [email]
-    );
-    return rows[0];
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(results[0]);
+      });
+    });
   }
 
   static async create(userData) {
-    const { email, password, name } = userData;
-    const [result] = await pool.execute(
-      'INSERT INTO users (email, password, name, created_at) VALUES (?, ?, ?, NOW())',
-      [email, password, name]
-    );
-    return result.insertId;
-  }
-
-  static async findById(id) {
-    const [rows] = await pool.execute(
-      'SELECT id, email, name, created_at FROM users WHERE id = ?',
-      [id]
-    );
-    return rows[0];
+    const { id, password, name } = userData;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    return new Promise((resolve, reject) => {
+      const query = 'INSERT INTO users (id, password, name, created_at) VALUES (?, ?, ?, NOW())';
+      db.query(query, [id, hashedPassword, name], (err, results) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve({ id, name });
+      });
+    });
   }
 }
 

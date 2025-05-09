@@ -16,13 +16,13 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
       const body = res.data?.response?.body;
 
       if (!body || !body.items) {
-        console.warn(`❌ ${pageNo}페이지 응답 오류. 응답 구조:`, res.data);
+        console.warn(` ${pageNo}페이지 응답 오류. 응답 구조:`, res.data);
         break;
       }
 
       if (pageNo === 1) {
         totalCount = body.totalCount;
-        console.log(`📊 총 관광지 수: ${totalCount}개`);
+        console.log(` 총 관광지 수: ${totalCount}개`);
       }
 
       const items = body.items.item || [];
@@ -36,7 +36,6 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
         const longitude = item.mapx || 0;
         const createdAt = new Date();
 
-        // ✅ overview 조회
         let description = "설명 없음";
         let imageUrl = "";
         try {
@@ -51,10 +50,9 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
             imageUrl = [img1, img2].filter(Boolean).join("\n");
           }
         } catch (err) {
-          console.warn(`❌ ${name} overview 조회 실패: ${err.message}`);
+          console.warn(` ${name} overview 조회 실패: ${err.message}`);
         }
 
-        // ✅ DB 저장
         try {
           const sql = `
             INSERT INTO tourist_spots 
@@ -75,21 +73,21 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
             createdAt,
           ]);
 
-          console.log(`✅ 저장 완료: ${name}`);
+          console.log(` 저장 완료: ${name}`);
           await new Promise((r) => setTimeout(r, 200));
         } catch (dbErr) {
-          console.error(`💥 DB 저장 실패: ${name} - ${dbErr.message}`);
+          console.error(` DB 저장 실패: ${name} - ${dbErr.message}`);
         }
       }
 
       pageNo++;
     } catch (err) {
-      console.error(`❌ ${pageNo}페이지 오류:`, err.message);
+      console.error(` ${pageNo}페이지 오류:`, err.message);
       break;
     }
   } while ((pageNo - 1) * numOfRows < totalCount);
 
-  console.log("🎉 경상북도 관광지 저장 완료!");
+  console.log(" 경상북도 관광지 저장 완료!");
 }
 
 module.exports = fetchTourData;
