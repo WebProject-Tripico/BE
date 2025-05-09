@@ -12,7 +12,7 @@ class User {
   static async create(userData) {
     const { email, password, name } = userData;
     const [result] = await pool.execute(
-      'INSERT INTO users (email, password, name) VALUES (?, ?, ?)',
+      'INSERT INTO users (email, password, name, created_at) VALUES (?, ?, ?, NOW())',
       [email, password, name]
     );
     return result.insertId;

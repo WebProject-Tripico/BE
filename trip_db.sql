@@ -1,17 +1,12 @@
-USE trip_db;
-
-DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `tourist_spots`;
-DROP TABLE IF EXISTS `trip_courses`;
-DROP TABLE IF EXISTS `trip_items`;
+CREATE DATABASE tripico;
+USE tripico;
 
 CREATE TABLE `users` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
   `name` VARCHAR(40),
   `email` VARCHAR(40) UNIQUE,
   `password` VARCHAR(40),
-  `created_at` DATETIME,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `created_at` DATETIME
 );
 
 CREATE TABLE `tourist_spots` (
