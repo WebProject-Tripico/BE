@@ -1,34 +1,17 @@
 const mysql = require("mysql2");
 require("dotenv").config();
 
-const db = mysql.createConnection({
+const pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "tripico",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error("Database connection failed:", err);
-    return;
-  }
-  console.log("Database connection successful");
-});
+// Promise wrapper to enable async/await syntax
+const promisePool = pool.promise();
 
-const testConnection = () => {
-  return new Promise((resolve, reject) => {
-    db.connect((err) => {
-      if (err) {
-        console.error("Database connection failed:", err);
-        reject(err);
-        return;
-      }
-      console.log("Database connection successful");
-      resolve();
-    });
-  });
-};
-
-module.exports = { db, testConnection };
-module.exports = db;
+module.exports = promisePool;
