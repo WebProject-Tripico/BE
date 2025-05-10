@@ -26,7 +26,6 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
       }
 
       let items = body.items.item || [];
-      // 단일 객체인 경우 배열로 변환
       if (!Array.isArray(items)) {
         items = [items];
       }
@@ -35,7 +34,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
       for (const item of items) {
         const contentId = item.contentid;
         if (!contentId) {
-          console.warn('contentId가 없는 항목이 있습니다:', item);
+          console.warn("contentId가 없는 항목이 있습니다:", item);
           continue;
         }
 
@@ -63,8 +62,10 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
               infoCenter: commonItem.infocenter?.trim() || "데이터가 없습니다",
               useTime: commonItem.usetime?.trim() || "데이터가 없습니다",
               parking: commonItem.parking?.trim() || "데이터가 없습니다",
-              babyCarriage: commonItem.chkbabycarriage?.trim() || "데이터가 없습니다",
-              creditCard: commonItem.chkcreditcard?.trim() || "데이터가 없습니다"
+              babyCarriage:
+                commonItem.chkbabycarriage?.trim() || "데이터가 없습니다",
+              creditCard:
+                commonItem.chkcreditcard?.trim() || "데이터가 없습니다",
             };
 
             description = JSON.stringify(descriptionData);
@@ -79,14 +80,14 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
           } else {
             description = JSON.stringify({
               address: address,
-              overview: "데이터가 없습니다"
+              overview: "데이터가 없습니다",
             });
           }
         } catch (err) {
           console.warn(` ${name} overview 조회 실패: ${err.message}`);
           description = JSON.stringify({
             address: address,
-            overview: "데이터가 없습니다"
+            overview: "데이터가 없습니다",
           });
         }
 
@@ -105,7 +106,9 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
             imageUrl.trim(),
             createdAt,
           ]);
-          console.log(` 저장 결과: ${name}, affectedRows: ${result.affectedRows}, insertId: ${result.insertId}`);
+          console.log(
+            ` 저장 결과: ${name}, affectedRows: ${result.affectedRows}, insertId: ${result.insertId}`
+          );
           await new Promise((r) => setTimeout(r, 200));
         } catch (dbErr) {
           console.error(` DB 저장 실패: ${name} - ${dbErr.message}`);
