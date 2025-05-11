@@ -67,16 +67,12 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
               creditCard:
                 commonItem.chkcreditcard?.trim() || "데이터가 없습니다",
             };
-
             description = JSON.stringify(descriptionData);
 
             let img1 = commonItem.firstimage || "";
             let img2 = commonItem.firstimage2 || "";
-            if (!img1 && !img2) {
-              imageUrl = "이미지가 없습니다";
-            } else {
-              imageUrl = [img1, img2].filter(Boolean).join("\n");
-            }
+            imageUrl =
+              [img1, img2].filter(Boolean).join("\n") || "이미지가 없습니다";
           } else {
             description = JSON.stringify({
               address: address,
@@ -94,10 +90,19 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
         try {
           const sql = `
             INSERT INTO tourist_spots 
-            (name, description, latitude, longitude, address, image_url, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (content_id, name, description, latitude, longitude, address, image_url, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+              name = VALUES(name),
+              description = VALUES(description),
+              latitude = VALUES(latitude),
+              longitude = VALUES(longitude),
+              address = VALUES(address),
+              image_url = VALUES(image_url)
           `;
+
           const [result] = await pool.execute(sql, [
+            contentId,
             name,
             description.trim(),
             latitude,
@@ -106,8 +111,9 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
             imageUrl.trim(),
             createdAt,
           ]);
+
           console.log(
-            ` 저장 결과: ${name}, affectedRows: ${result.affectedRows}, insertId: ${result.insertId}`
+            ` 저장 결과: ${name}, affectedRows: ${result.affectedRows}`
           );
           await new Promise((r) => setTimeout(r, 200));
         } catch (dbErr) {

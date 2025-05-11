@@ -33,6 +33,25 @@ class TouristSpot {
     );
     return rows;
   }
+
+  static async findByRegion(region) {
+    const [rows] = await pool.execute(
+      'SELECT * FROM tourist_spots WHERE address LIKE ?',
+      [`%${region}%`]
+    );
+    return rows.map(row => {
+      let desc = {};
+      try {
+        desc = JSON.parse(row.description);
+      } catch (e) {
+        desc = { overview: row.description || "데이터가 없습니다" };
+      }
+      return {
+        ...row,
+        description: desc
+      };
+    });
+  }
 }
 
 module.exports = TouristSpot; 

@@ -8,10 +8,9 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || "tripico",
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
-// Promise wrapper to enable async/await syntax
 const promisePool = pool.promise();
 
 module.exports = promisePool;

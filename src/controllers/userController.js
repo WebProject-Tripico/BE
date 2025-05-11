@@ -35,7 +35,6 @@ exports.login = async (req, res) => {
       throw new AppError('Please provide email and password', 400);
     }
 
-    // 사용자 찾기
     const user = await User.findByEmail(email);
     if (!user || user.password !== password) {
       throw new AppError('Invalid email or password', 401);

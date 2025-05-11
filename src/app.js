@@ -11,6 +11,7 @@ const touristSpotRoutes = require('./routes/touristSpotRoutes');
 const tourRoutes = require('./routes/tourRoutes');
 const authRoutes = require('./routes/authRoutes');
 const travelRouter = require('./routes/travel');
+const recommendRoutes = require('./routes/recommendRoutes');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/tourist-spots', touristSpotRoutes);
 app.use('/api/tours', tourRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/travel', travelRouter);
+app.use('/api', recommendRoutes);
 
 app.get("/fetch-gyeongbuk", async (req, res) => {
   await fetchTourData();
