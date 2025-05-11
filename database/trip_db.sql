@@ -1,19 +1,11 @@
-USE trip_db;
-
-DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `tourist_spots`;
-DROP TABLE IF EXISTS `trip_courses`;
-DROP TABLE IF EXISTS `trip_items`;
-
-CREATE TABLE `users` (
-  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `name` VARCHAR(40),
-  `email` VARCHAR(40) UNIQUE,
-  `password` VARCHAR(40),
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` VARCHAR(50) PRIMARY KEY,
+  `name` VARCHAR(100),
+  `password` VARCHAR(100),
   `created_at` DATETIME
 );
 
-CREATE TABLE `tourist_spots` (
+CREATE TABLE IF NOT EXISTS `tourist_spots` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
   `name` VARCHAR(100),
   `description` TEXT,
@@ -24,25 +16,24 @@ CREATE TABLE `tourist_spots` (
   `created_at` DATETIME
 );
 
-CREATE TABLE `trip_courses` (
+CREATE TABLE IF NOT EXISTS `trip_courses` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `user_id` BIGINT,
+  `user_id` VARCHAR(50),
   `start_date` DATE,
   `end_date` DATE,
   `number_of_people` INT,
   `recommendation_type` VARCHAR(20),
-  `created_at` DATETIME
+  `created_at` DATETIME,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );
 
-CREATE TABLE `trip_items` (
+CREATE TABLE IF NOT EXISTS `trip_items` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
   `course_id` BIGINT,
   `place_id` BIGINT,
   `day_number` INT,
   `sequence` INT,
-  `expected_time` TIME
+  `expected_time` TIME,
+  FOREIGN KEY (`course_id`) REFERENCES `trip_courses` (`id`),
+  FOREIGN KEY (`place_id`) REFERENCES `tourist_spots` (`id`)
 );
-
-ALTER TABLE `trip_courses` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-ALTER TABLE `trip_items` ADD FOREIGN KEY (`course_id`) REFERENCES `trip_courses` (`id`);
-ALTER TABLE `trip_items` ADD FOREIGN KEY (`place_id`) REFERENCES `tourist_spots` (`id`);
