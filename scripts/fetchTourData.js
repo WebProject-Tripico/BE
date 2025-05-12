@@ -1,6 +1,6 @@
-const { promisePool } = require('../src/config/database');
-const axios = require('axios');
-require('dotenv').config();
+const { promisePool } = require("../src/config/database");
+const axios = require("axios");
+require("dotenv").config();
 
 async function fetchTourData(areaCode = 35, contentTypeId = 12) {
   const apiKey = process.env.TOUR_API_KEY;
@@ -79,10 +79,13 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
               babyCarriage: introItem?.chkbabycarriage || "데이터가 없습니다",
               creditCard: introItem?.chkcreditcard || "데이터가 없습니다",
               pet: introItem?.chkpet || "데이터가 없습니다",
-              overview: commonItem?.overview || "데이터가 없습니다"
+              overview: commonItem?.overview || "데이터가 없습니다",
             };
 
-            console.log(` ${name} 상세정보:`, JSON.stringify(descriptionData, null, 2));
+            console.log(
+              ` ${name} 상세정보:`,
+              JSON.stringify(descriptionData, null, 2)
+            );
             description = JSON.stringify(descriptionData);
           } else {
             console.warn(` ${name} 상세정보가 없습니다.`);
@@ -93,7 +96,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
         } catch (err) {
           console.warn(` ${name} 상세정보 조회 실패: ${err.message}`);
           if (err.response) {
-            console.warn('API 응답:', err.response.data);
+            console.warn("API 응답:", err.response.data);
           }
           description = JSON.stringify({
             overview: "데이터가 없습니다",
@@ -125,7 +128,9 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
             createdAt,
           ]);
 
-          console.log(` 저장 결과: ${name}, affectedRows: ${result.affectedRows}`);
+          console.log(
+            ` 저장 결과: ${name}, affectedRows: ${result.affectedRows}`
+          );
           await new Promise((r) => setTimeout(r, 200));
         } catch (dbErr) {
           console.error(` DB 저장 실패: ${name} - ${dbErr.message}`);
@@ -137,7 +142,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
     } catch (err) {
       console.error(` ${pageNo}페이지 오류:`, err.message);
       if (err.response) {
-        console.error('API 응답:', err.response.data);
+        console.error("API 응답:", err.response.data);
       }
       break;
     }

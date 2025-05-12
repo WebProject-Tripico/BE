@@ -1,11 +1,11 @@
-const { promisePool } = require('../src/config/database');
-const axios = require('axios');
-require('dotenv').config();
+const { promisePool } = require("../src/config/database");
+const axios = require("axios");
+require("dotenv").config();
 
 async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
   const apiKey = process.env.TOUR_API_KEY;
   const numOfRows = 100;
-  let pageNo = 11;  // 1003번째 데이터부터 시작 (10페이지 * 100 + 3)
+  let pageNo = 11;
   let totalCount = 0;
 
   do {
@@ -20,7 +20,7 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
         break;
       }
 
-      if (pageNo === 11) {  // 첫 페이지일 때만 totalCount 설정
+      if (pageNo === 11) {
         totalCount = body.totalCount;
         console.log(` 총 관광지 수: ${totalCount}개`);
         console.log(` 1003번째 데이터부터 저장 시작`);
@@ -49,7 +49,6 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
         let imageUrl = item.firstimage || "이미지가 없습니다";
 
         try {
-          // detailIntro1 API 사용
           const introUrl = `http://apis.data.go.kr/B551011/KorService1/detailIntro1?serviceKey=${apiKey}&MobileApp=testApp&MobileOS=ETC&contentId=${contentId}&contentTypeId=${contentTypeId}&_type=json`;
           const introRes = await axios.get(introUrl);
           let introItem = introRes.data?.response?.body?.items?.item;
@@ -57,7 +56,6 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
             introItem = introItem[0];
           }
 
-          // detailCommon1 API 사용
           const commonUrl = `http://apis.data.go.kr/B551011/KorService1/detailCommon1?serviceKey=${apiKey}&MobileApp=testApp&MobileOS=ETC&contentId=${contentId}&contentTypeId=${contentTypeId}&defaultYN=Y&firstImageYN=Y&addrinfoYN=Y&overviewYN=Y&_type=json`;
           const commonRes = await axios.get(commonUrl);
           let commonItem = commonRes.data?.response?.body?.items?.item;
@@ -66,7 +64,6 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
           }
 
           if (introItem || commonItem) {
-            // API 응답 데이터를 그대로 사용
             const descriptionData = {
               heritage1: introItem?.heritage1 || "0",
               heritage2: introItem?.heritage2 || "0",
@@ -83,11 +80,13 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
               babyCarriage: introItem?.chkbabycarriage || "데이터가 없습니다",
               creditCard: introItem?.chkcreditcard || "데이터가 없습니다",
               pet: introItem?.chkpet || "데이터가 없습니다",
-              overview: commonItem?.overview || "데이터가 없습니다"
+              overview: commonItem?.overview || "데이터가 없습니다",
             };
 
-            // 데이터 로깅 추가
-            console.log(` ${name} 상세정보:`, JSON.stringify(descriptionData, null, 2));
+            console.log(
+              ` ${name} 상세정보:`,
+              JSON.stringify(descriptionData, null, 2)
+            );
             description = JSON.stringify(descriptionData);
           } else {
             console.warn(` ${name} 상세정보가 없습니다.`);
@@ -98,7 +97,7 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
         } catch (err) {
           console.warn(` ${name} 상세정보 조회 실패: ${err.message}`);
           if (err.response) {
-            console.warn('API 응답:', err.response.data);
+            console.warn("API 응답:", err.response.data);
           }
           description = JSON.stringify({
             overview: "데이터가 없습니다",
@@ -130,7 +129,9 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
             createdAt,
           ]);
 
-          console.log(` 저장 결과: ${name}, affectedRows: ${result.affectedRows}`);
+          console.log(
+            ` 저장 결과: ${name}, affectedRows: ${result.affectedRows}`
+          );
           await new Promise((r) => setTimeout(r, 200));
         } catch (dbErr) {
           console.error(` DB 저장 실패: ${name} - ${dbErr.message}`);
@@ -142,7 +143,7 @@ async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
     } catch (err) {
       console.error(` ${pageNo}페이지 오류:`, err.message);
       if (err.response) {
-        console.error('API 응답:', err.response.data);
+        console.error("API 응답:", err.response.data);
       }
       break;
     }
