@@ -1,22 +1,29 @@
-const { pool } = require('../config/database');
+const { pool } = require("../config/database");
 
 class TouristSpot {
-  static async create({ name, description, latitude, longitude, address, image_url }) {
+  static async create({
+    name,
+    description,
+    latitude,
+    longitude,
+    address,
+    image_url,
+  }) {
     const [result] = await pool.execute(
-      'INSERT INTO tourist_spots (name, description, latitude, longitude, address, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())',
+      "INSERT INTO tourist_spots (name, description, latitude, longitude, address, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())",
       [name, description, latitude, longitude, address, image_url]
     );
     return result.insertId;
   }
 
   static async findAll() {
-    const [rows] = await pool.execute('SELECT * FROM tourist_spots');
+    const [rows] = await pool.execute("SELECT * FROM tourist_spots");
     return rows;
   }
 
   static async findById(id) {
     const [rows] = await pool.execute(
-      'SELECT * FROM tourist_spots WHERE id = ?',
+      "SELECT * FROM tourist_spots WHERE id = ?",
       [id]
     );
     return rows[0];
@@ -36,10 +43,10 @@ class TouristSpot {
 
   static async findByRegion(region) {
     const [rows] = await pool.execute(
-      'SELECT * FROM tourist_spots WHERE address LIKE ?',
+      "SELECT * FROM tourist_spots WHERE address LIKE ?",
       [`%${region}%`]
     );
-    return rows.map(row => {
+    return rows.map((row) => {
       let desc = {};
       try {
         desc = JSON.parse(row.description);
@@ -48,10 +55,10 @@ class TouristSpot {
       }
       return {
         ...row,
-        description: desc
+        description: desc,
       };
     });
   }
 }
 
-module.exports = TouristSpot; 
+module.exports = TouristSpot;

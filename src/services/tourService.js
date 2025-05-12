@@ -26,7 +26,7 @@ const fetchTourData = async () => {
     console.log(`총 ${items.length}개의 관광지 데이터를 받아왔습니다.`);
 
     const existingContentIds = await pool.query(
-      'SELECT contentid FROM tour_spots'
+      'SELECT contentid FROM tourist_spots'
     );
 
     const existingIds = new Set(existingContentIds[0].map(item => item.contentid));
@@ -46,32 +46,24 @@ const fetchTourData = async () => {
         const overview = item.overview?.trim() || '데이터가 없습니다';
 
         const result = await pool.query(
-          `INSERT INTO tour_spots (
-            contentid, title, addr1, addr2, zipcode, tel, firstimage, firstimage2,
-            mapx, mapy, mlevel, areacode, sigungucode, cat1, cat2, cat3,
-            createdtime, modifiedtime, booktour, overview
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO tourist_spots (
+            content_id, name, description, latitude, longitude, address, image_url, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE 
+            name = VALUES(name),
+            description = VALUES(description),
+            latitude = VALUES(latitude),
+            longitude = VALUES(longitude),
+            address = VALUES(address),
+            image_url = VALUES(image_url)`,
           [
             item.contentid,
             item.title,
-            item.addr1,
-            item.addr2 || '',
-            item.zipcode || '',
-            item.tel || '',
-            item.firstimage || '',
-            item.firstimage2 || '',
-            item.mapx || 0,
+            overview,
             item.mapy || 0,
-            item.mlevel || '',
-            item.areacode || '',
-            item.sigungucode || '',
-            item.cat1 || '',
-            item.cat2 || '',
-            item.cat3 || '',
-            item.createdtime || '',
-            item.modifiedtime || '',
-            item.booktour || '',
-            overview
+            item.mapx || 0,
+            item.addr1,
+            item.firstimage || '',
           ]
         );
 

@@ -3,7 +3,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const db = require('./config/database');
-const fetchTourData = require('../scripts/fetchTourData');
+const { fetchTourData } = require('../scripts/fetchTourData');
+const { fetchTourData2 } = require('./scripts/fetchTourData2');
 
 const userRoutes = require('./routes/userRoutes');
 const courseRoutes = require('./routes/courseRoutes');
@@ -28,8 +29,23 @@ app.use('/api/travel', travelRouter);
 app.use('/api', recommendRoutes);
 
 app.get("/fetch-gyeongbuk", async (req, res) => {
-  await fetchTourData();
-  res.send("✅ 경상북도 관광지 저장 완료!");
+  try {
+    await fetchTourData();
+    res.json({ message: "✅ 경상북도 관광지 저장 완료!" });
+  } catch (error) {
+    console.error('데이터 가져오기 실패:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/fetch-gyeongbuk2", async (req, res) => {
+  try {
+    await fetchTourData2();
+    res.json({ message: "✅ 남은 경상북도 관광지 저장 완료!" });
+  } catch (error) {
+    console.error('데이터 가져오기 실패:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.use((err, req, res, next) => {
@@ -43,12 +59,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-const startServer = () => {
-  app.listen(PORT, () => {
-    console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
-  });
-};
-
-startServer();
+app.listen(PORT, () => {
+  console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
+});
 
 module.exports = app; 

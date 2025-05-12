@@ -2,10 +2,10 @@ const { promisePool } = require('../src/config/database');
 const axios = require('axios');
 require('dotenv').config();
 
-async function fetchTourData(areaCode = 35, contentTypeId = 12) {
+async function fetchTourData2(areaCode = 35, contentTypeId = 12) {
   const apiKey = process.env.TOUR_API_KEY;
   const numOfRows = 100;
-  let pageNo = 1;
+  let pageNo = 11;  // 1003번째 데이터부터 시작 (10페이지 * 100 + 3)
   let totalCount = 0;
 
   do {
@@ -20,9 +20,10 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
         break;
       }
 
-      if (pageNo === 1) {
+      if (pageNo === 11) {  // 첫 페이지일 때만 totalCount 설정
         totalCount = body.totalCount;
         console.log(` 총 관광지 수: ${totalCount}개`);
+        console.log(` 1003번째 데이터부터 저장 시작`);
       }
 
       let items = body.items.item || [];
@@ -48,6 +49,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
         let imageUrl = item.firstimage || "이미지가 없습니다";
 
         try {
+          // detailIntro1 API 사용
           const introUrl = `http://apis.data.go.kr/B551011/KorService1/detailIntro1?serviceKey=${apiKey}&MobileApp=testApp&MobileOS=ETC&contentId=${contentId}&contentTypeId=${contentTypeId}&_type=json`;
           const introRes = await axios.get(introUrl);
           let introItem = introRes.data?.response?.body?.items?.item;
@@ -55,6 +57,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
             introItem = introItem[0];
           }
 
+          // detailCommon1 API 사용
           const commonUrl = `http://apis.data.go.kr/B551011/KorService1/detailCommon1?serviceKey=${apiKey}&MobileApp=testApp&MobileOS=ETC&contentId=${contentId}&contentTypeId=${contentTypeId}&defaultYN=Y&firstImageYN=Y&addrinfoYN=Y&overviewYN=Y&_type=json`;
           const commonRes = await axios.get(commonUrl);
           let commonItem = commonRes.data?.response?.body?.items?.item;
@@ -63,6 +66,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
           }
 
           if (introItem || commonItem) {
+            // API 응답 데이터를 그대로 사용
             const descriptionData = {
               heritage1: introItem?.heritage1 || "0",
               heritage2: introItem?.heritage2 || "0",
@@ -82,6 +86,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
               overview: commonItem?.overview || "데이터가 없습니다"
             };
 
+            // 데이터 로깅 추가
             console.log(` ${name} 상세정보:`, JSON.stringify(descriptionData, null, 2));
             description = JSON.stringify(descriptionData);
           } else {
@@ -143,7 +148,7 @@ async function fetchTourData(areaCode = 35, contentTypeId = 12) {
     }
   } while ((pageNo - 1) * numOfRows < totalCount);
 
-  console.log(" 경상북도 관광지 저장 완료!");
+  console.log(" 남은 경상북도 관광지 저장 완료!");
 }
 
-module.exports = { fetchTourData };
+module.exports = { fetchTourData2 };
