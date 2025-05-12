@@ -1,5 +1,5 @@
 const axios = require("axios");
-const KAKAO_API_KEY = process.env.KAKAO_API_KEY || "KakaoAK YOUR_KAKAO_KEY";
+const KAKAO_API_KEY = process.env.KAKAO_API_KEY;
 
 async function getCarDuration(startLat, startLng, endLat, endLng) {
   const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${startLng},${startLat}&destination=${endLng},${endLat}`;
@@ -9,6 +9,7 @@ async function getCarDuration(startLat, startLng, endLat, endLng) {
     });
     return Math.round(res.data.routes[0].summary.duration / 60);
   } catch (e) {
+    console.error("카카오 차량 API 오류:", e.response ? e.response.data : e.message);
     return null;
   }
 }

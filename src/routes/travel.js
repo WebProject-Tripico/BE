@@ -1,5 +1,5 @@
 const express = require("express");
-const db = require("../config/database");
+const { promisePool } = require("../config/database");
 const { getCarDuration, getWalkDuration } = require("../../scripts/kakao");
 const { getTransitDuration } = require("../../scripts/google");
 const router = express.Router();
@@ -8,8 +8,8 @@ router.post("/calculate-time", async (req, res) => {
   const { startLat, startLng, placeId, transport } = req.body;
 
   try {
-    const [rows] = await db.query(
-      "SELECT latitude, longitude, name FROM tourist_spots WHERE id = ?",
+    const [rows] = await promisePool.query(
+      "SELECT latitude, longitude, name FROM tourist_spots WHERE content_id = ?",
       [placeId]
     );
     if (rows.length === 0)

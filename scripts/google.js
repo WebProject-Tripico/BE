@@ -8,6 +8,7 @@ async function getTransitDuration(startLat, startLng, endLat, endLng) {
     if (res.data.routes.length === 0) return null;
     return Math.round(res.data.routes[0].legs[0].duration.value / 60);
   } catch (e) {
+    console.error("구글 대중교통 API 오류:", e.response ? e.response.data : e.message);
     return null;
   }
 }
