@@ -5,7 +5,7 @@ require("dotenv").config();
 async function fetchTourData(areaCode = 35, contentTypeId = 12) {
   const apiKey = process.env.TOUR_API_KEY;
   const numOfRows = 100;
-  let pageNo = 1;
+  let pageNo = 10;
   let totalCount = 0;
 
   do {
